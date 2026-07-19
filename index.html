@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#e85d8a">
-  <meta name="description" content="Confirmação de presença da festa de Heloá e Heitor, organizada por Tudo de Helena.">
+  <meta name="description" content="Confirmação de presença da festa de Eloá e Heitor, organizada por Tudo de Helena.">
   <meta name="gas-webapp-url" content="WEB_APP_URL_AQUI">
-  <title>Festa Tudo de Helena — Heloá e Heitor</title>
+  <title>Festa Tudo de Helena — Eloá e Heitor</title>
   <style>
     :root {
       --rosa: #e85d8a;
@@ -667,11 +667,11 @@
   <main class="page">
     <section id="openingView" class="app-view opening-screen active" aria-labelledby="openingTitle">
       <div class="opening-media">
-        <img src="fundo-festa.png" alt="Arte do convite da festa de Heloá e Heitor">
+        <img src="fundo-festa.png" alt="Arte do convite da festa de Eloá e Heitor">
       </div>
       <div class="opening-panel">
         <span class="welcome-chip">✨ Sejam bem-vindos à nossa festa</span>
-        <h1 id="openingTitle" tabindex="-1">Heloá e Heitor esperam por você!</h1>
+        <h1 id="openingTitle" tabindex="-1">Eloá e Heitor esperam por você!</h1>
         <p>Uma comemoração preparada com muito carinho pela Tudo de Helena.</p>
         <button id="advanceBtn" type="button" class="advance-btn">Confirmar presença</button>
         <div class="opening-note">Confirme somente as crianças convidadas.</div>
@@ -688,7 +688,7 @@
       <div class="brand">🎈 Organização: Tudo de Helena</div>
       <h1 id="eventTitle" tabindex="-1">Festa Tudo de Helena</h1>
       <div class="names" aria-label="Aniversariantes">
-        <span id="child1Name" class="name-one">Heloá</span>
+        <span id="child1Name" class="name-one">Eloá</span>
         <span class="amp">&amp;</span>
         <span id="child2Name" class="name-two">Heitor</span>
       </div>
@@ -814,7 +814,7 @@
     </section>
 
       <footer>
-        Festa Tudo de Helena • Heloá &amp; Heitor
+        Festa Tudo de Helena • Eloá &amp; Heitor
       </footer>
     </section>
   </main>
@@ -826,7 +826,7 @@
     const CONFIGURED_URL = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec(?:\?.*)?$/.test(WEB_APP_URL);
     const DEFAULT_CONFIG = {
       eventTitle: 'Festa Tudo de Helena',
-      child1Name: 'Heloá',
+      child1Name: 'Eloá',
       child1Age: '',
       child2Name: 'Heitor',
       child2Age: '',
@@ -899,9 +899,9 @@
       config.maxChildrenPerResponse = Math.min(20, Math.max(1, Number(config.maxChildrenPerResponse) || 10));
       state.config = config;
 
-      document.title = `${config.eventTitle || 'Festa Tudo de Helena'} — ${config.child1Name || 'Heloá'} e ${config.child2Name || 'Heitor'}`;
+      document.title = `${config.eventTitle || 'Festa Tudo de Helena'} — ${config.child1Name || 'Eloá'} e ${config.child2Name || 'Heitor'}`;
       $('#eventTitle').textContent = config.eventTitle || 'Festa Tudo de Helena';
-      $('#child1Name').textContent = config.child1Name || 'Heloá';
+      $('#child1Name').textContent = config.child1Name || 'Eloá';
       $('#child2Name').textContent = config.child2Name || 'Heitor';
 
       const ages = [
