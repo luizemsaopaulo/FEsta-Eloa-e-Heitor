@@ -1,0 +1,123 @@
+FESTA TUDO DE HELENA — HELOÁ E HEITOR
+======================================
+
+ARQUIVOS
+--------
+index.html               Convite público e confirmação de presença.
+organizador.html         Painel para definir os detalhes e ver as respostas.
+Code.gs                  Backend para Google Planilhas / Apps Script.
+CONFIGURAR_WEBAPP.bat     Abre o configurador da URL do Web App.
+Configurar-WebApp.ps1      Auxiliar chamado automaticamente pelo BAT.
+
+O SITE FOI FEITO PARA:
+----------------------
+- Abrir com a arte completa da festa e trocar de tela sem rolagem.
+- Confirmar somente crianças.
+- Não pedir quantidade de adultos.
+- Perguntar quantas crianças irão.
+- Pedir o nome de cada criança e permitir informar a idade.
+- Registrar Sim e Não.
+- Atualizar a resposta anterior quando o mesmo WhatsApp enviar de novo.
+- Permitir que a organização defina título, nomes, idades, data, horário,
+  local, endereço, prazo e mensagens.
+- Mostrar totais de famílias, crianças confirmadas e recusas.
+- Baixar as confirmações em CSV.
+
+PASSO 1 — CRIAR A PLANILHA E O BACKEND
+---------------------------------------
+1. Crie uma Planilha Google vazia.
+2. Na planilha, clique em Extensões > Apps Script.
+3. Apague o código que aparecer.
+4. Abra o arquivo Code.gs desta pasta, copie tudo e cole no Apps Script.
+5. Salve o projeto.
+6. No seletor de funções, escolha configurarProjeto e clique em Executar.
+7. Autorize o acesso solicitado pelo Google.
+8. Volte à planilha. Serão criadas as abas:
+   - CONFIGURACAO
+   - CONFIRMACOES
+9. O código administrativo inicial é: 1234
+
+PASSO 2 — IMPLANTAR COMO WEB APP
+---------------------------------
+1. No Apps Script, clique em Implantar > Nova implantação.
+2. Em “Selecionar tipo”, escolha Aplicativo da Web.
+3. Em “Executar como”, escolha você / proprietário do script.
+4. Em “Quem pode acessar”, escolha Qualquer pessoa (ou a opção pública
+   equivalente disponível na sua conta).
+5. Clique em Implantar e autorize, caso seja solicitado.
+6. Copie a URL da implantação que termina em /exec.
+
+IMPORTANTE:
+Use a URL de implantação /exec. Não use a URL de teste /dev.
+
+PASSO 3 — COLOCAR A URL NO SITE
+--------------------------------
+1. Dê dois cliques em CONFIGURAR_WEBAPP.bat.
+2. Cole a URL terminada em /exec.
+3. Pressione Enter.
+4. O BAT altera automaticamente:
+   - index.html
+   - organizador.html
+5. Antes de alterar, ele cria cópias .backup.
+
+PASSO 4 — CONFIGURAR A FESTA
+-----------------------------
+1. Abra organizador.html.
+2. Entre com o código inicial 1234.
+3. Na aba “Configuração da festa”, informe:
+   - idades de Heloá e Heitor;
+   - data;
+   - início e término;
+   - local e endereço;
+   - prazo para confirmação;
+   - mensagens.
+4. Troque o código administrativo.
+5. Clique em Salvar configurações.
+
+PASSO 5 — PUBLICAR PARA AS MÃES
+--------------------------------
+Para enviar apenas um link pelo WhatsApp, hospede estes três arquivos juntos:
+- index.html
+- organizador.html
+- fundo-festa.png
+
+O Code.gs não deve ser publicado no GitHub junto do site; ele fica dentro do
+Google Apps Script.
+
+Você pode usar GitHub Pages:
+1. Crie um repositório.
+2. Envie index.html, organizador.html e fundo-festa.png.
+3. Ative Settings > Pages.
+4. Compartilhe o link que termina em /index.html.
+
+SEGURANÇA E PRIVACIDADE
+-----------------------
+- Não compartilhe o link do organizador.html com as mães.
+- Troque o código 1234 no primeiro acesso.
+- A planilha deve continuar privada na sua conta Google.
+- O Web App precisa ser público para receber confirmações sem exigir login,
+  mas somente o script grava na planilha.
+
+ATUALIZAÇÃO DO APPS SCRIPT
+--------------------------
+Quando alterar o Code.gs depois da implantação:
+1. Salve o código.
+2. Vá em Implantar > Gerenciar implantações.
+3. Edite a implantação.
+4. Crie uma nova versão e implante novamente.
+5. Normalmente a URL /exec permanece a mesma.
+
+TESTE RECOMENDADO
+-----------------
+1. Preencha uma confirmação de teste no index.html.
+2. Confira se apareceu na aba CONFIRMACOES.
+3. Abra organizador.html e confira os totais.
+4. Envie outra resposta usando o mesmo WhatsApp e confirme que a linha foi
+   atualizada, sem duplicar.
+
+ATUALIZAÇÃO — TELA CHEIA E MÚSICA
+- A imagem de abertura ocupa a tela inteira usando object-fit: cover.
+- Em telas com proporção diferente, pequenas partes das bordas podem ser cortadas para preencher toda a tela.
+- A música é um jingle instrumental original gerado pelo navegador com Web Audio API.
+- Não existe arquivo MP3 externo. O visitante pode ligar/desligar pelo botão de música.
+- Os navegadores normalmente só liberam som depois de um toque do usuário; por isso a música inicia ao tocar em "Confirmar presença" ou no botão "Tocar música".

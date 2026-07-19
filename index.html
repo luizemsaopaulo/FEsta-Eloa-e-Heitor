@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#e85d8a">
+  <meta name="description" content="Confirmação de presença da festa de Heloá e Heitor, organizada por Tudo de Helena.">
+  <meta name="gas-webapp-url" content="WEB_APP_URL_AQUI">
+  <title>Festa Tudo de Helena — Heloá e Heitor</title>
+  <style>
+    :root {
+      --rosa: #e85d8a;
+      --rosa-escuro: #b93467;
+      --rosa-claro: #fff0f5;
+      --azul: #4e7ac7;
+      --azul-claro: #edf4ff;
+      --amarelo: #ffd66b;
+      --verde: #2e9d70;
+      --vermelho: #c9495b;
+      --texto: #332b35;
+      --muted: #746b76;
+      --borda: #eadde3;
+      --fundo: #fffaf7;
+      --card: #ffffff;
+      --sombra: 0 18px 55px rgba(83, 42, 63, .13);
+      --raio: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: auto; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--texto);
+      background:
+        radial-gradient(circle at top left, rgba(255, 214, 107, .18), transparent 26%),
+        radial-gradient(circle at top right, rgba(78, 122, 199, .12), transparent 24%),
+        linear-gradient(180deg, #fffaf7 0%, #fff4f8 100%);
+      font-family: "Segoe UI", Arial, sans-serif;
+      line-height: 1.5;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .decor {
+      display: none;
+    }
+
+    .decor span {
+      position: absolute;
+      width: 12px;
+      height: 22px;
+      border-radius: 10px;
+      opacity: .42;
+      transform: rotate(25deg);
+    }
+
+    .decor span:nth-child(1) { left: 6%; top: 9%; background: var(--rosa); }
+    .decor span:nth-child(2) { left: 88%; top: 18%; background: var(--azul); transform: rotate(-30deg); }
+    .decor span:nth-child(3) { left: 15%; top: 70%; background: var(--amarelo); transform: rotate(65deg); }
+    .decor span:nth-child(4) { left: 92%; top: 78%; background: var(--rosa); transform: rotate(8deg); }
+    .decor span:nth-child(5) { left: 3%; top: 44%; background: var(--azul); transform: rotate(-50deg); }
+
+    .page {
+      width: min(920px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 50px;
+    }
+
+    .app-view {
+      display: none;
+    }
+
+    .app-view.active {
+      display: block;
+      animation: viewEnter .34s ease both;
+    }
+
+    @keyframes viewEnter {
+      from { opacity: 0; transform: scale(.985); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .app-view.active { animation: none; }
+    }
+
+    .opening-screen {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      min-height: 100svh;
+      margin-top: -28px;
+      margin-left: calc(50% - 50vw);
+      overflow: hidden;
+      padding: 0;
+      background: #111;
+    }
+
+    .opening-screen.active {
+      display: block;
+    }
+
+    .confirm-view {
+      min-height: calc(100vh - 56px);
+      padding-top: 34px;
+    }
+
+    .confirm-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .back-btn {
+      border: 1px solid #ead6df;
+      border-radius: 999px;
+      padding: 10px 15px;
+      color: var(--rosa-escuro);
+      background: rgba(255,255,255,.92);
+      font-weight: 900;
+      box-shadow: 0 8px 22px rgba(83,42,63,.08);
+      transition: transform .16s, background .16s;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-1px);
+      background: #fff;
+    }
+
+    .screen-label {
+      color: var(--muted);
+      font-size: .88rem;
+      font-weight: 800;
+    }
+
+    .opening-media {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .opening-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.08) 0%, transparent 28%),
+        linear-gradient(0deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.25) 28%, transparent 58%);
+      pointer-events: none;
+    }
+
+    .opening-media img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      background: #fff;
+    }
+
+    .opening-panel {
+      position: absolute;
+      z-index: 2;
+      left: 50%;
+      bottom: max(18px, env(safe-area-inset-bottom));
+      width: min(760px, calc(100% - 28px));
+      padding: 18px;
+      text-align: center;
+      color: #fff;
+      transform: translateX(-50%);
+      text-shadow: 0 2px 16px rgba(0,0,0,.65);
+    }
+
+    .welcome-chip {
+      display: inline-block;
+      padding: 7px 13px;
+      border: 1px solid rgba(255,255,255,.45);
+      border-radius: 999px;
+      background: rgba(0,0,0,.28);
+      color: #fff;
+      font-size: .9rem;
+      font-weight: 900;
+      backdrop-filter: blur(8px);
+    }
+
+    .opening-panel h1 {
+      margin: 11px 0 7px;
+      font-size: clamp(1.7rem, 5vw, 2.75rem);
+      line-height: 1.08;
+      letter-spacing: -.03em;
+    }
+
+    .opening-panel p {
+      max-width: 640px;
+      margin: 0 auto;
+      color: rgba(255,255,255,.93);
+      font-size: .98rem;
+    }
+
+    .advance-btn {
+      margin-top: 15px;
+      border: 1px solid rgba(255,255,255,.80);
+      border-radius: 999px;
+      padding: 15px 24px;
+      color: var(--rosa-escuro);
+      background: #fff;
+      font-weight: 900;
+      font-size: 1rem;
+      box-shadow: 0 14px 32px rgba(0,0,0,.30);
+      transition: transform .16s, box-shadow .16s;
+    }
+
+    .advance-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 38px rgba(0,0,0,.36);
+    }
+
+    .opening-note {
+      margin-top: 9px;
+      color: rgba(255,255,255,.86);
+      font-size: .86rem;
+    }
+
+    .music-toggle {
+      position: fixed;
+      z-index: 60;
+      top: max(12px, env(safe-area-inset-top));
+      right: 12px;
+      border: 1px solid rgba(255,255,255,.65);
+      border-radius: 999px;
+      padding: 10px 14px;
+      color: #fff;
+      background: rgba(0,0,0,.42);
+      font-weight: 900;
+      box-shadow: 0 10px 26px rgba(0,0,0,.20);
+      backdrop-filter: blur(10px);
+      transition: transform .16s, background .16s;
+    }
+
+    .music-toggle:hover {
+      transform: translateY(-1px);
+      background: rgba(0,0,0,.58);
+    }
+
+    .music-toggle[aria-pressed="true"] {
+      color: #24583f;
+      border-color: rgba(255,255,255,.9);
+      background: rgba(244,255,249,.95);
+      text-shadow: none;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 34px 26px 28px;
+      border: 1px solid rgba(232, 93, 138, .20);
+      border-radius: 34px;
+      text-align: center;
+      background: rgba(255, 255, 255, .80);
+      backdrop-filter: blur(8px);
+      box-shadow: var(--sombra);
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      filter: blur(2px);
+      opacity: .17;
+    }
+
+    .hero::before { background: var(--rosa); left: -60px; top: -70px; }
+    .hero::after { background: var(--azul); right: -55px; bottom: -75px; }
+
+    .brand {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 13px;
+      border-radius: 999px;
+      color: var(--rosa-escuro);
+      background: var(--rosa-claro);
+      font-size: .9rem;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+
+    .hero h1 {
+      position: relative;
+      margin: 14px 0 4px;
+      font-size: clamp(2rem, 7vw, 4.2rem);
+      line-height: 1.02;
+      letter-spacing: -.04em;
+    }
+
+    .names {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+      font-size: clamp(1.35rem, 5vw, 2.2rem);
+      font-weight: 900;
+    }
+
+    .name-one { color: var(--rosa-escuro); }
+    .name-two { color: var(--azul); }
+    .amp { color: #a08a95; font-size: .75em; }
+
+    .ages {
+      position: relative;
+      min-height: 24px;
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .event-grid {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 23px;
+    }
+
+    .event-item {
+      min-height: 96px;
+      padding: 15px 12px;
+      border: 1px solid var(--borda);
+      border-radius: 19px;
+      background: #fff;
+    }
+
+    .event-icon {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 1.45rem;
+    }
+
+    .event-label {
+      display: block;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .event-value {
+      display: block;
+      margin-top: 3px;
+      font-size: .98rem;
+      font-weight: 800;
+      white-space: pre-line;
+    }
+
+    .event-note {
+      position: relative;
+      margin: 18px auto 0;
+      max-width: 700px;
+      color: var(--muted);
+    }
+
+    .deadline {
+      display: none;
+      position: relative;
+      width: fit-content;
+      margin: 15px auto 0;
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: #fff6d8;
+      color: #76570b;
+      font-weight: 800;
+      font-size: .9rem;
+    }
+
+    .rule-card {
+      display: flex;
+      gap: 13px;
+      align-items: flex-start;
+      margin: 20px 0;
+      padding: 17px 18px;
+      border: 1px solid #f4d2df;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(255,255,255,.93) 0%, rgba(255,243,247,.88) 100%);
+      backdrop-filter: blur(6px);
+    }
+
+    .rule-icon {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      border-radius: 14px;
+      background: var(--rosa-claro);
+      font-size: 1.25rem;
+    }
+
+    .rule-card strong { display: block; color: var(--rosa-escuro); }
+    .rule-card p { margin: 2px 0 0; color: var(--muted); }
+
+    .card {
+      padding: 25px;
+      border: 1px solid var(--borda);
+      border-radius: var(--raio);
+      background: rgba(255, 255, 255, .90);
+      backdrop-filter: blur(7px);
+      box-shadow: 0 12px 38px rgba(83, 42, 63, .08);
+    }
+
+    .card h2 { margin: 0; font-size: clamp(1.35rem, 4vw, 1.75rem); }
+    .card-intro { margin: 5px 0 22px; color: var(--muted); }
+
+    .backend-alert {
+      display: none;
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      border: 1px solid #f0c46a;
+      border-radius: 15px;
+      background: #fff8e8;
+      color: #70500c;
+      font-weight: 700;
+    }
+
+    .field { margin-bottom: 17px; }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    label,
+    .field-label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: 800;
+    }
+
+    .required { color: var(--vermelho); }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #d9cbd2;
+      border-radius: 14px;
+      padding: 13px 14px;
+      color: var(--texto);
+      background: #fff;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--rosa);
+      box-shadow: 0 0 0 4px rgba(232, 93, 138, .12);
+    }
+
+    textarea { resize: vertical; min-height: 92px; }
+
+    .hint { margin: 6px 0 0; color: var(--muted); font-size: .86rem; }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .choice {
+      position: relative;
+      display: block;
+      cursor: pointer;
+    }
+
+    .choice input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .choice-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 58px;
+      padding: 13px;
+      border: 2px solid #e5d9df;
+      border-radius: 16px;
+      text-align: center;
+      font-weight: 900;
+      transition: .18s ease;
+    }
+
+    .choice input:checked + .choice-box {
+      border-color: var(--rosa);
+      color: var(--rosa-escuro);
+      background: var(--rosa-claro);
+      box-shadow: 0 7px 20px rgba(232, 93, 138, .12);
+    }
+
+    .choice input:focus-visible + .choice-box {
+      outline: 3px solid rgba(78, 122, 199, .35);
+      outline-offset: 2px;
+    }
+
+    .conditional {
+      display: none;
+      margin-top: 18px;
+      padding-top: 19px;
+      border-top: 1px dashed #ddcbd4;
+    }
+
+    .conditional.visible { display: block; }
+
+    .children-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 13px;
+    }
+
+    .child-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 112px;
+      gap: 11px;
+      padding: 14px;
+      border: 1px solid var(--borda);
+      border-radius: 16px;
+      background: #fffafc;
+    }
+
+    .child-number {
+      grid-column: 1 / -1;
+      color: var(--rosa-escuro);
+      font-size: .88rem;
+      font-weight: 900;
+    }
+
+    .honeypot {
+      position: absolute !important;
+      left: -9999px !important;
+      width: 1px !important;
+      height: 1px !important;
+      overflow: hidden !important;
+    }
+
+    .privacy-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      margin: 19px 0;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    .submit-btn,
+    .secondary-btn {
+      width: 100%;
+      border: 0;
+      border-radius: 16px;
+      padding: 15px 18px;
+      font-weight: 900;
+      transition: transform .16s, box-shadow .16s, opacity .16s;
+    }
+
+    .submit-btn {
+      color: #fff;
+      background: linear-gradient(135deg, var(--rosa) 0%, var(--rosa-escuro) 100%);
+      box-shadow: 0 11px 28px rgba(185, 52, 103, .26);
+    }
+
+    .submit-btn:hover:not(:disabled) { transform: translateY(-1px); }
+    .submit-btn:disabled { opacity: .58; cursor: wait; }
+
+    .secondary-btn {
+      margin-top: 11px;
+      color: var(--rosa-escuro);
+      background: var(--rosa-claro);
+    }
+
+    .status {
+      display: none;
+      margin-top: 15px;
+      padding: 13px 15px;
+      border-radius: 14px;
+      font-weight: 700;
+    }
+
+    .status.show { display: block; }
+    .status.error { color: #84293b; background: #fff0f2; border: 1px solid #f4c6cf; }
+    .status.info { color: #275685; background: #eef6ff; border: 1px solid #cbdff2; }
+
+    .success-card {
+      display: none;
+      padding: 32px 25px;
+      border: 1px solid #cce8dc;
+      border-radius: var(--raio);
+      text-align: center;
+      background: #f5fff9;
+      box-shadow: 0 12px 38px rgba(46, 157, 112, .1);
+    }
+
+    .success-card.visible { display: block; }
+    .success-icon { font-size: 3rem; }
+    .success-card h2 { margin: 7px 0 8px; color: #247a58; }
+    .success-card p { color: #4b6f60; }
+    .protocol {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: #fff;
+      color: #276247;
+      font-family: Consolas, monospace;
+      font-weight: 800;
+    }
+
+    footer {
+      padding: 24px 10px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: .86rem;
+    }
+
+    @media (max-width: 680px) {
+      .page { width: min(100% - 18px, 920px); padding-top: 10px; }
+      .opening-screen { margin-top: -10px; }
+      .confirm-view { padding-top: 42px; }
+      .confirm-toolbar { position: sticky; top: 8px; z-index: 15; }
+      .screen-label { display: none; }
+      .opening-media img { object-position: center center; }
+      .opening-panel { width: calc(100% - 18px); padding: 10px 6px; }
+      .opening-panel h1 { font-size: clamp(1.55rem, 8vw, 2.2rem); }
+      .opening-panel p { font-size: .92rem; }
+      .music-toggle { padding: 9px 12px; font-size: .86rem; }
+      .hero { padding: 27px 15px 22px; border-radius: 25px; }
+      .event-grid { grid-template-columns: 1fr; }
+      .event-item { min-height: auto; }
+      .card { padding: 20px 15px; }
+      .field-grid, .choice-grid { grid-template-columns: 1fr; }
+      .child-card { grid-template-columns: 1fr; }
+      .child-number { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="decor" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+  <button id="musicToggle" type="button" class="music-toggle" aria-pressed="false" title="Ligar ou desligar a música">♫ Tocar música</button>
+
+  <main class="page">
+    <section id="openingView" class="app-view opening-screen active" aria-labelledby="openingTitle">
+      <div class="opening-media">
+        <img src="fundo-festa.png" alt="Arte do convite da festa de Heloá e Heitor">
+      </div>
+      <div class="opening-panel">
+        <span class="welcome-chip">✨ Sejam bem-vindos à nossa festa</span>
+        <h1 id="openingTitle" tabindex="-1">Heloá e Heitor esperam por você!</h1>
+        <p>Uma comemoração preparada com muito carinho pela Tudo de Helena.</p>
+        <button id="advanceBtn" type="button" class="advance-btn">Confirmar presença</button>
+        <div class="opening-note">Confirme somente as crianças convidadas.</div>
+      </div>
+    </section>
+
+    <section id="confirmView" class="app-view confirm-view" aria-label="Tela de confirmação" hidden>
+      <div class="confirm-toolbar">
+        <button id="backToInviteBtn" type="button" class="back-btn">← Voltar ao convite</button>
+        <span class="screen-label">Confirmação de presença</span>
+      </div>
+
+      <section id="eventHero" class="hero" aria-labelledby="eventTitle">
+      <div class="brand">🎈 Organização: Tudo de Helena</div>
+      <h1 id="eventTitle" tabindex="-1">Festa Tudo de Helena</h1>
+      <div class="names" aria-label="Aniversariantes">
+        <span id="child1Name" class="name-one">Heloá</span>
+        <span class="amp">&amp;</span>
+        <span id="child2Name" class="name-two">Heitor</span>
+      </div>
+      <p id="ages" class="ages"></p>
+
+      <div class="event-grid">
+        <div class="event-item">
+          <span class="event-icon">📅</span>
+          <span class="event-label">Data</span>
+          <span id="eventDate" class="event-value">A definir</span>
+        </div>
+        <div class="event-item">
+          <span class="event-icon">🕒</span>
+          <span class="event-label">Horário</span>
+          <span id="eventTime" class="event-value">A definir</span>
+        </div>
+        <div class="event-item">
+          <span class="event-icon">📍</span>
+          <span class="event-label">Local</span>
+          <span id="eventLocation" class="event-value">A definir</span>
+        </div>
+      </div>
+
+      <p id="eventNote" class="event-note">Os detalhes da festa serão informados em breve.</p>
+      <div id="deadline" class="deadline"></div>
+    </section>
+
+    <aside id="ruleCard" class="rule-card" aria-label="Informação importante">
+      <div class="rule-icon">🧒</div>
+      <div>
+        <strong>Confirmação somente das crianças</strong>
+        <p id="inviteRule">A festa é exclusiva para crianças. Informe apenas as crianças que receberam o convite — não é necessário colocar quantidade de adultos.</p>
+      </div>
+    </aside>
+
+    <section id="formCard" class="card" aria-labelledby="formTitle">
+      <h2 id="formTitle">Confirme a presença</h2>
+      <p class="card-intro">Leva menos de um minuto. A quantidade informada será usada para organizar a festa.</p>
+
+      <div id="backendAlert" class="backend-alert">
+        O endereço do Google Apps Script ainda não foi configurado. Use o arquivo <strong>CONFIGURAR_WEBAPP.bat</strong> antes de publicar o site.
+      </div>
+
+      <form id="rsvpForm" novalidate>
+        <div class="field">
+          <span class="field-label">A criança vai à festa? <span class="required">*</span></span>
+          <div class="choice-grid">
+            <label class="choice">
+              <input type="radio" name="going" value="sim" required>
+              <span class="choice-box">🎉 Sim, vai participar</span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="going" value="nao" required>
+              <span class="choice-box">💌 Não poderá ir</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="responsibleName">Nome da mãe, pai ou responsável <span class="required">*</span></label>
+            <input id="responsibleName" name="responsibleName" type="text" maxlength="100" autocomplete="name" required placeholder="Ex.: Maria da Silva">
+          </div>
+          <div class="field">
+            <label for="phone">WhatsApp do responsável <span class="required">*</span></label>
+            <input id="phone" name="phone" type="tel" maxlength="16" inputmode="numeric" autocomplete="tel" required placeholder="(11) 99999-9999">
+          </div>
+        </div>
+
+        <div id="yesFields" class="conditional">
+          <div class="field">
+            <label for="childrenCount">Quantas crianças irão? <span class="required">*</span></label>
+            <select id="childrenCount" name="childrenCount">
+              <option value="1">1 criança</option>
+            </select>
+            <p class="hint">Conte somente as crianças convidadas. Adultos não entram nessa quantidade.</p>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Nome das crianças <span class="required">*</span></span>
+            <div id="childrenList" class="children-list"></div>
+          </div>
+
+          <div class="field">
+            <label for="restrictions">Alergia, restrição alimentar ou cuidado importante</label>
+            <textarea id="restrictions" name="restrictions" maxlength="500" placeholder="Ex.: alergia a amendoim. Deixe em branco se não houver."></textarea>
+          </div>
+        </div>
+
+        <div id="noFields" class="conditional">
+          <div class="field">
+            <label for="declinedChildName">Nome da criança que recebeu o convite <span class="required">*</span></label>
+            <input id="declinedChildName" name="declinedChildName" type="text" maxlength="160" placeholder="Ex.: Ana">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="notes">Observação para a organização</label>
+          <textarea id="notes" name="notes" maxlength="500" placeholder="Opcional"></textarea>
+        </div>
+
+        <div class="honeypot" aria-hidden="true">
+          <label for="website">Não preencha este campo</label>
+          <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div class="privacy-note">
+          <span>🔒</span>
+          <span>Os dados serão usados somente para organizar esta festa e ficarão registrados na planilha da organização.</span>
+        </div>
+
+        <button id="submitBtn" class="submit-btn" type="submit">Enviar confirmação</button>
+        <div id="formStatus" class="status" role="status" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <section id="successCard" class="success-card" aria-live="polite">
+      <div class="success-icon">✅</div>
+      <h2>Confirmação registrada!</h2>
+      <p id="successText">A organização recebeu sua resposta.</p>
+      <div id="protocol" class="protocol"></div>
+      <button id="editResponseBtn" class="secondary-btn" type="button">Corrigir ou atualizar esta resposta</button>
+    </section>
+
+      <footer>
+        Festa Tudo de Helena • Heloá &amp; Heitor
+      </footer>
+    </section>
+  </main>
+
+  <script>
+    'use strict';
+
+    const WEB_APP_URL = document.querySelector('meta[name="gas-webapp-url"]').content.trim();
+    const CONFIGURED_URL = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec(?:\?.*)?$/.test(WEB_APP_URL);
+    const DEFAULT_CONFIG = {
+      eventTitle: 'Festa Tudo de Helena',
+      child1Name: 'Heloá',
+      child1Age: '',
+      child2Name: 'Heitor',
+      child2Age: '',
+      eventDate: '',
+      eventTime: '',
+      eventEndTime: '',
+      locationName: '',
+      address: '',
+      eventNote: 'Os detalhes da festa serão informados em breve.',
+      deadline: '',
+      inviteRule: 'A festa é exclusiva para crianças. Informe apenas as crianças que receberam o convite — não é necessário colocar quantidade de adultos.',
+      maxChildrenPerResponse: 10
+    };
+
+    const state = {
+      config: { ...DEFAULT_CONFIG },
+      startedAt: Date.now(),
+      lastProtocol: '',
+      musicPlaying: false,
+      audioContext: null,
+      musicLoopTimer: null
+    };
+
+    const $ = (selector) => document.querySelector(selector);
+    const form = $('#rsvpForm');
+    const yesFields = $('#yesFields');
+    const noFields = $('#noFields');
+    const childrenCount = $('#childrenCount');
+    const childrenList = $('#childrenList');
+    const formStatus = $('#formStatus');
+    const submitBtn = $('#submitBtn');
+
+    function cleanText(value, max = 500) {
+      return String(value ?? '').replace(/\s+/g, ' ').trim().slice(0, max);
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function formatDateBR(isoDate) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(isoDate || '')) return '';
+      const [year, month, day] = isoDate.split('-').map(Number);
+      const date = new Date(year, month - 1, day);
+      if (Number.isNaN(date.getTime())) return '';
+      return new Intl.DateTimeFormat('pt-BR', {
+        weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'
+      }).format(date).replace(/^./, c => c.toUpperCase());
+    }
+
+    function formatShortDateBR(isoDate) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(isoDate || '')) return '';
+      const [year, month, day] = isoDate.split('-');
+      return `${day}/${month}/${year}`;
+    }
+
+    function ageText(name, age) {
+      const number = Number(age);
+      if (!name || !Number.isFinite(number) || number <= 0) return '';
+      return `${name}: ${number} ${number === 1 ? 'ano' : 'anos'}`;
+    }
+
+    function applyConfig(rawConfig) {
+      const config = { ...DEFAULT_CONFIG, ...(rawConfig || {}) };
+      config.maxChildrenPerResponse = Math.min(20, Math.max(1, Number(config.maxChildrenPerResponse) || 10));
+      state.config = config;
+
+      document.title = `${config.eventTitle || 'Festa Tudo de Helena'} — ${config.child1Name || 'Heloá'} e ${config.child2Name || 'Heitor'}`;
+      $('#eventTitle').textContent = config.eventTitle || 'Festa Tudo de Helena';
+      $('#child1Name').textContent = config.child1Name || 'Heloá';
+      $('#child2Name').textContent = config.child2Name || 'Heitor';
+
+      const ages = [
+        ageText(config.child1Name, config.child1Age),
+        ageText(config.child2Name, config.child2Age)
+      ].filter(Boolean).join(' • ');
+      $('#ages').textContent = ages;
+
+      $('#eventDate').textContent = formatDateBR(config.eventDate) || 'A definir';
+      const times = [cleanText(config.eventTime, 10), cleanText(config.eventEndTime, 10)].filter(Boolean);
+      $('#eventTime').textContent = times.length === 2 ? `${times[0]} às ${times[1]}` : (times[0] || 'A definir');
+
+      const place = [cleanText(config.locationName, 100), cleanText(config.address, 180)].filter(Boolean).join('\n');
+      $('#eventLocation').textContent = place || 'A definir';
+      $('#eventNote').textContent = cleanText(config.eventNote, 500) || DEFAULT_CONFIG.eventNote;
+      $('#inviteRule').textContent = cleanText(config.inviteRule, 500) || DEFAULT_CONFIG.inviteRule;
+
+      const deadline = formatShortDateBR(config.deadline);
+      const deadlineBox = $('#deadline');
+      if (deadline) {
+        deadlineBox.textContent = `Confirme até ${deadline}`;
+        deadlineBox.style.display = 'block';
+      } else {
+        deadlineBox.style.display = 'none';
+      }
+
+      populateCountOptions(config.maxChildrenPerResponse);
+    }
+
+    function populateCountOptions(max) {
+      const current = Math.min(Number(childrenCount.value) || 1, max);
+      childrenCount.innerHTML = '';
+      for (let i = 1; i <= max; i += 1) {
+        const option = document.createElement('option');
+        option.value = String(i);
+        option.textContent = `${i} ${i === 1 ? 'criança' : 'crianças'}`;
+        childrenCount.appendChild(option);
+      }
+      childrenCount.value = String(current);
+      renderChildrenFields(current);
+    }
+
+    function renderChildrenFields(count) {
+      const oldValues = [...childrenList.querySelectorAll('.child-card')].map(card => ({
+        name: card.querySelector('[data-child-name]')?.value || '',
+        age: card.querySelector('[data-child-age]')?.value || ''
+      }));
+
+      childrenList.innerHTML = '';
+      for (let i = 0; i < count; i += 1) {
+        const data = oldValues[i] || { name: '', age: '' };
+        const wrapper = document.createElement('div');
+        wrapper.className = 'child-card';
+        wrapper.innerHTML = `
+          <div class="child-number">Criança ${i + 1}</div>
+          <div>
+            <label for="childName${i}">Nome completo <span class="required">*</span></label>
+            <input id="childName${i}" data-child-name type="text" maxlength="100" required placeholder="Nome da criança" value="${escapeHtml(data.name)}">
+          </div>
+          <div>
+            <label for="childAge${i}">Idade</label>
+            <input id="childAge${i}" data-child-age type="number" min="0" max="17" inputmode="numeric" placeholder="Ex.: 7" value="${escapeHtml(data.age)}">
+          </div>`;
+        childrenList.appendChild(wrapper);
+      }
+    }
+
+    function updateConditionalFields() {
+      const selected = form.elements.going.value;
+      const isYes = selected === 'sim';
+      const isNo = selected === 'nao';
+      yesFields.classList.toggle('visible', isYes);
+      noFields.classList.toggle('visible', isNo);
+      $('#declinedChildName').required = isNo;
+
+      childrenList.querySelectorAll('[data-child-name]').forEach(input => {
+        input.required = isYes;
+      });
+    }
+
+    function maskPhone(value) {
+      const digits = value.replace(/\D/g, '').slice(0, 11);
+      if (digits.length <= 2) return digits;
+      if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+      if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    }
+
+    function showStatus(message, type = 'error') {
+      formStatus.textContent = message;
+      formStatus.className = `status show ${type}`;
+    }
+
+    function clearStatus() {
+      formStatus.textContent = '';
+      formStatus.className = 'status';
+    }
+
+    function loadPublicConfig() {
+      if (!CONFIGURED_URL) {
+        $('#backendAlert').style.display = 'block';
+        applyConfig(DEFAULT_CONFIG);
+        return;
+      }
+
+      const callbackName = `__tdhConfig_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+      const script = document.createElement('script');
+      const cleanup = () => {
+        delete window[callbackName];
+        script.remove();
+      };
+      const timeout = setTimeout(() => {
+        cleanup();
+        applyConfig(DEFAULT_CONFIG);
+        showStatus('Não foi possível carregar os detalhes da festa agora. Tente novamente em instantes.', 'info');
+      }, 12000);
+
+      window[callbackName] = (response) => {
+        clearTimeout(timeout);
+        cleanup();
+        if (response && response.ok) {
+          applyConfig(response.config);
+        } else {
+          applyConfig(DEFAULT_CONFIG);
+        }
+      };
+
+      const separator = WEB_APP_URL.includes('?') ? '&' : '?';
+      script.src = `${WEB_APP_URL}${separator}action=getPublicConfig&callback=${encodeURIComponent(callbackName)}&_=${Date.now()}`;
+      script.onerror = () => {
+        clearTimeout(timeout);
+        cleanup();
+        applyConfig(DEFAULT_CONFIG);
+      };
+      document.head.appendChild(script);
+    }
+
+    function postToGas(action, payload) {
+      if (!CONFIGURED_URL) {
+        return Promise.reject(new Error('O Google Apps Script ainda não foi configurado.'));
+      }
+
+      return new Promise((resolve, reject) => {
+        const requestId = `req_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        const frameName = `gasFrame_${requestId}`;
+        const iframe = document.createElement('iframe');
+        iframe.name = frameName;
+        iframe.title = 'Envio seguro da confirmação';
+        iframe.hidden = true;
+
+        const transportForm = document.createElement('form');
+        transportForm.method = 'POST';
+        transportForm.action = WEB_APP_URL;
+        transportForm.target = frameName;
+        transportForm.hidden = true;
+
+        const fields = {
+          action,
+          requestId,
+          payload: JSON.stringify(payload)
+        };
+
+        Object.entries(fields).forEach(([name, value]) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = name;
+          input.value = value;
+          transportForm.appendChild(input);
+        });
+
+        const cleanup = () => {
+          window.removeEventListener('message', onMessage);
+          iframe.remove();
+          transportForm.remove();
+        };
+
+        const timer = setTimeout(() => {
+          cleanup();
+          reject(new Error('O envio demorou mais que o esperado. Confira a internet e tente novamente.'));
+        }, 25000);
+
+        function onMessage(event) {
+          const data = event.data;
+          if (!data || data.source !== 'tudodehelena-rsvp' || data.requestId !== requestId) return;
+          clearTimeout(timer);
+          cleanup();
+          if (data.payload?.ok) {
+            resolve(data.payload);
+          } else {
+            reject(new Error(data.payload?.message || 'Não foi possível concluir o envio.'));
+          }
+        }
+
+        window.addEventListener('message', onMessage);
+        document.body.append(iframe, transportForm);
+        transportForm.submit();
+      });
+    }
+
+    function validateFormPayload() {
+      const going = form.elements.going.value;
+      const responsibleName = cleanText($('#responsibleName').value, 100);
+      const phone = $('#phone').value.replace(/\D/g, '');
+
+      if (!['sim', 'nao'].includes(going)) throw new Error('Escolha se a criança vai ou não à festa.');
+      if (responsibleName.length < 2) throw new Error('Informe o nome do responsável.');
+      if (phone.length < 10 || phone.length > 13) throw new Error('Informe um WhatsApp válido com DDD.');
+
+      const payload = {
+        going,
+        responsibleName,
+        phone,
+        restrictions: cleanText($('#restrictions').value, 500),
+        notes: cleanText($('#notes').value, 500),
+        declinedChildName: cleanText($('#declinedChildName').value, 160),
+        children: [],
+        website: $('#website').value,
+        startedAt: state.startedAt
+      };
+
+      if (going === 'sim') {
+        const expected = Number(childrenCount.value);
+        payload.children = [...childrenList.querySelectorAll('.child-card')].map(card => ({
+          name: cleanText(card.querySelector('[data-child-name]').value, 100),
+          age: cleanText(card.querySelector('[data-child-age]').value, 2)
+        }));
+
+        if (payload.children.length !== expected) throw new Error('Confira a quantidade de crianças.');
+        const missing = payload.children.findIndex(child => child.name.length < 2);
+        if (missing >= 0) throw new Error(`Informe o nome da criança ${missing + 1}.`);
+      } else if (payload.declinedChildName.length < 2) {
+        throw new Error('Informe o nome da criança que recebeu o convite.');
+      }
+
+      return payload;
+    }
+
+    form.addEventListener('change', (event) => {
+      if (event.target.name === 'going') updateConditionalFields();
+    });
+
+    childrenCount.addEventListener('change', () => {
+      renderChildrenFields(Number(childrenCount.value));
+    });
+
+    $('#phone').addEventListener('input', (event) => {
+      event.target.value = maskPhone(event.target.value);
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      clearStatus();
+
+      let payload;
+      try {
+        payload = validateFormPayload();
+      } catch (error) {
+        showStatus(error.message);
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
+
+      try {
+        const response = await postToGas('submitRsvp', payload);
+        state.lastProtocol = response.protocol || '';
+        $('#successText').textContent = response.updated
+          ? 'Sua resposta anterior foi atualizada com sucesso.'
+          : 'A organização recebeu sua resposta.';
+        $('#protocol').textContent = response.protocol ? `Protocolo: ${response.protocol}` : '';
+        $('#protocol').style.display = response.protocol ? 'inline-block' : 'none';
+        $('#eventHero').style.display = 'none';
+        $('#ruleCard').style.display = 'none';
+        $('#formCard').style.display = 'none';
+        $('#successCard').classList.add('visible');
+        window.scrollTo(0, 0);
+      } catch (error) {
+        showStatus(error.message || 'Não foi possível enviar. Tente novamente.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar confirmação';
+      }
+    });
+
+    $('#editResponseBtn').addEventListener('click', () => {
+      $('#successCard').classList.remove('visible');
+      $('#eventHero').style.display = '';
+      $('#ruleCard').style.display = '';
+      $('#formCard').style.display = 'block';
+      state.startedAt = Date.now();
+      window.scrollTo(0, 0);
+    });
+
+    // Jingle instrumental original gerado pelo próprio navegador.
+    // Não usa arquivo de áudio externo nem gravação de terceiros.
+    const ORIGINAL_JINGLE = [
+      [72, .28], [76, .28], [79, .40], [76, .28],
+      [74, .28], [77, .28], [81, .48],
+      [79, .28], [76, .28], [74, .28], [72, .48],
+      [67, .28], [72, .28], [76, .28], [79, .52],
+      [81, .28], [79, .28], [77, .28], [76, .52],
+      [74, .28], [72, .28], [69, .28], [67, .58]
+    ];
+
+    function midiToFrequency(midi) {
+      return 440 * Math.pow(2, (midi - 69) / 12);
+    }
+
+    function scheduleJingleNote(context, midi, startTime, duration) {
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = 'triangle';
+      oscillator.frequency.setValueAtTime(midiToFrequency(midi), startTime);
+      gain.gain.setValueAtTime(0.0001, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.12, startTime + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + Math.max(0.08, duration - 0.02));
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      oscillator.start(startTime);
+      oscillator.stop(startTime + duration);
+    }
+
+    function scheduleJingleCycle() {
+      const context = state.audioContext;
+      if (!state.musicPlaying || !context || context.state === 'closed') return;
+
+      const beatSeconds = 0.62;
+      let noteTime = context.currentTime + 0.06;
+      ORIGINAL_JINGLE.forEach(([midi, beats]) => {
+        const duration = Math.max(0.12, beats * beatSeconds * 0.88);
+        scheduleJingleNote(context, midi, noteTime, duration);
+        noteTime += beats * beatSeconds;
+      });
+
+      const cycleDelay = Math.max(500, (noteTime - context.currentTime + 1.0) * 1000);
+      state.musicLoopTimer = window.setTimeout(scheduleJingleCycle, cycleDelay);
+    }
+
+    function updateMusicButton() {
+      const button = $('#musicToggle');
+      button.setAttribute('aria-pressed', String(state.musicPlaying));
+      button.textContent = state.musicPlaying ? '🔊 Música ligada' : '♫ Tocar música';
+      button.title = state.musicPlaying ? 'Desligar a música' : 'Ligar a música';
+    }
+
+    async function startMusic() {
+      if (state.musicPlaying) return;
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) {
+        $('#musicToggle').textContent = 'Som não disponível';
+        $('#musicToggle').disabled = true;
+        return;
+      }
+
+      try {
+        state.audioContext = new AudioContextClass();
+        await state.audioContext.resume();
+        state.musicPlaying = true;
+        updateMusicButton();
+        scheduleJingleCycle();
+      } catch (error) {
+        state.musicPlaying = false;
+        updateMusicButton();
+      }
+    }
+
+    async function stopMusic() {
+      state.musicPlaying = false;
+      window.clearTimeout(state.musicLoopTimer);
+      state.musicLoopTimer = null;
+      const context = state.audioContext;
+      state.audioContext = null;
+      if (context && context.state !== 'closed') {
+        try { await context.close(); } catch (_) {}
+      }
+      updateMusicButton();
+    }
+
+    $('#musicToggle').addEventListener('click', () => {
+      if (state.musicPlaying) stopMusic();
+      else startMusic();
+    });
+
+    function showView(viewName) {
+      const openingView = $('#openingView');
+      const confirmView = $('#confirmView');
+      const showOpening = viewName === 'opening';
+
+      openingView.hidden = !showOpening;
+      confirmView.hidden = showOpening;
+      openingView.classList.toggle('active', showOpening);
+      confirmView.classList.toggle('active', !showOpening);
+      window.scrollTo(0, 0);
+
+      const focusTarget = showOpening ? $('#openingTitle') : $('#eventTitle');
+      requestAnimationFrame(() => focusTarget?.focus?.({ preventScroll: true }));
+    }
+
+    $('#advanceBtn').addEventListener('click', () => {
+      if (!state.musicPlaying) startMusic();
+      showView('confirm');
+    });
+    $('#backToInviteBtn').addEventListener('click', () => showView('opening'));
+
+    applyConfig(DEFAULT_CONFIG);
+    updateConditionalFields();
+    loadPublicConfig();
+  </script>
+</body>
+</html>

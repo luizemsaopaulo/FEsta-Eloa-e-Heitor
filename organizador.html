@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#7c4d9e">
+  <meta name="gas-webapp-url" content="WEB_APP_URL_AQUI">
+  <title>Painel da organização — Festa Tudo de Helena</title>
+  <style>
+    :root {
+      --roxo: #7c4d9e;
+      --roxo-escuro: #59336f;
+      --rosa: #e85d8a;
+      --verde: #21855f;
+      --vermelho: #b64052;
+      --amarelo: #f2b83f;
+      --texto: #302934;
+      --muted: #756b79;
+      --borda: #e6dce9;
+      --fundo: #f8f5fa;
+      --card: #fff;
+      --sombra: 0 14px 42px rgba(57, 35, 70, .10);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      position: relative;
+      isolation: isolate;
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--texto);
+      background: #f8f5fa;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    body::before {
+      z-index: -3;
+      background: center top / cover no-repeat url("fundo-festa.png");
+      opacity: .18;
+      transform: scale(1.02);
+    }
+
+    body::after {
+      z-index: -2;
+      background: linear-gradient(180deg, rgba(248,245,250,.92) 0%, rgba(255,248,251,.97) 100%);
+      backdrop-filter: blur(2px);
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px max(16px, calc((100vw - 1180px) / 2));
+      color: #fff;
+      background: linear-gradient(135deg, var(--roxo), var(--roxo-escuro));
+      box-shadow: 0 7px 25px rgba(57, 35, 70, .18);
+    }
+    .topbar strong { display: block; font-size: 1.05rem; }
+    .topbar small { opacity: .8; }
+    .top-actions { display: flex; gap: 8px; }
+
+    .page {
+      width: min(1180px, calc(100% - 26px));
+      margin: 0 auto;
+      padding: 24px 0 50px;
+    }
+
+    .card {
+      padding: 22px;
+      border: 1px solid var(--borda);
+      border-radius: 22px;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(7px);
+      box-shadow: var(--sombra);
+    }
+
+    .login-card { max-width: 460px; margin: 55px auto; text-align: center; }
+    .login-icon { font-size: 2.7rem; }
+    h1, h2, h3 { margin-top: 0; }
+    .muted { color: var(--muted); }
+
+    .field { margin-bottom: 15px; text-align: left; }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .field-grid.three { grid-template-columns: repeat(3, 1fr); }
+    label { display: block; margin-bottom: 6px; font-weight: 800; }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 13px;
+      border: 1px solid #d9cddd;
+      border-radius: 13px;
+      color: var(--texto);
+      background: #fff;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--roxo);
+      box-shadow: 0 0 0 4px rgba(124, 77, 158, .12);
+    }
+    textarea { min-height: 88px; resize: vertical; }
+    .hint { margin: 5px 0 0; color: var(--muted); font-size: .84rem; }
+
+    .btn {
+      border: 0;
+      border-radius: 13px;
+      padding: 11px 15px;
+      font-weight: 900;
+      transition: .16s;
+    }
+    .btn:hover:not(:disabled) { transform: translateY(-1px); }
+    .btn:disabled { opacity: .55; cursor: wait; }
+    .btn-primary { color: #fff; background: var(--roxo); }
+    .btn-light { color: var(--roxo-escuro); background: #f1e9f5; }
+    .btn-ghost { color: #fff; background: rgba(255,255,255,.15); }
+    .btn-block { width: 100%; }
+
+    .alert {
+      display: none;
+      margin: 12px 0;
+      padding: 12px 14px;
+      border-radius: 13px;
+      font-weight: 700;
+    }
+    .alert.show { display: block; }
+    .alert.error { color: #822e3d; background: #fff0f2; border: 1px solid #f1c7cf; }
+    .alert.success { color: #246947; background: #effbf4; border: 1px solid #c8e8d6; }
+    .alert.info { color: #5d4918; background: #fff8e4; border: 1px solid #efd99f; }
+
+    #dashboard { display: none; }
+    #dashboard.visible { display: block; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .stat {
+      padding: 18px;
+      border: 1px solid var(--borda);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 8px 25px rgba(57, 35, 70, .07);
+    }
+    .stat span { display: block; color: var(--muted); font-size: .82rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
+    .stat strong { display: block; margin-top: 4px; font-size: 2rem; line-height: 1; }
+    .stat:nth-child(1) strong { color: var(--verde); }
+    .stat:nth-child(2) strong { color: var(--rosa); }
+    .stat:nth-child(3) strong { color: var(--vermelho); }
+    .stat:nth-child(4) strong { color: var(--roxo); }
+
+    .tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .tab-btn {
+      border: 1px solid var(--borda);
+      border-radius: 999px;
+      padding: 9px 14px;
+      color: var(--muted);
+      background: #fff;
+      font-weight: 900;
+    }
+    .tab-btn.active { color: #fff; border-color: var(--roxo); background: var(--roxo); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .section-head h2 { margin-bottom: 0; }
+    .section-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .subcard {
+      padding: 18px;
+      border: 1px solid var(--borda);
+      border-radius: 17px;
+      background: #fdfbfe;
+      margin-bottom: 14px;
+    }
+    .subcard h3 { margin-bottom: 12px; font-size: 1rem; color: var(--roxo-escuro); }
+
+    .table-tools {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .table-tools input { flex: 1; }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--borda);
+      border-radius: 16px;
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 980px; background: #fff; }
+    th, td { padding: 11px 12px; border-bottom: 1px solid #eee5f0; text-align: left; vertical-align: top; }
+    th { position: sticky; top: 0; z-index: 2; color: #5f5364; background: #f8f4fa; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+    td { font-size: .91rem; }
+    tr:last-child td { border-bottom: 0; }
+    .badge {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: .78rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .badge.yes { color: #1c6848; background: #e9f8f0; }
+    .badge.no { color: #8d3041; background: #fff0f2; }
+    .empty { padding: 28px; text-align: center; color: var(--muted); }
+
+    .save-bar {
+      position: sticky;
+      bottom: 12px;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 18px;
+      padding: 12px;
+      border: 1px solid var(--borda);
+      border-radius: 16px;
+      background: rgba(255,255,255,.93);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 28px rgba(57,35,70,.12);
+    }
+
+    @media (max-width: 820px) {
+      .stats { grid-template-columns: 1fr 1fr; }
+      .field-grid, .field-grid.three { grid-template-columns: 1fr; }
+      .section-head, .table-tools { align-items: stretch; flex-direction: column; }
+      .topbar { align-items: flex-start; }
+      .topbar small { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .page { width: min(100% - 14px, 1180px); padding-top: 12px; }
+      .card { padding: 16px; border-radius: 17px; }
+      .stats { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .stat { padding: 13px; }
+      .stat strong { font-size: 1.55rem; }
+      .top-actions .btn { padding: 9px 10px; font-size: .83rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <strong>🎈 Painel Tudo de Helena</strong>
+      <small>Configuração e confirmações da festa</small>
+    </div>
+    <div class="top-actions">
+      <button id="openPublicBtn" class="btn btn-ghost" type="button">Abrir convite</button>
+      <button id="logoutBtn" class="btn btn-ghost" type="button" hidden>Sair</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <section id="loginCard" class="card login-card">
+      <div class="login-icon">🔐</div>
+      <h1>Área da organização</h1>
+      <p class="muted">Digite o código administrativo para definir data, horário, local, idades e acompanhar as confirmações.</p>
+      <div id="urlWarning" class="alert info">
+        Antes de usar, execute <strong>CONFIGURAR_WEBAPP.bat</strong> e informe a URL terminada em <strong>/exec</strong>.
+      </div>
+      <form id="loginForm">
+        <div class="field">
+          <label for="pin">Código administrativo</label>
+          <input id="pin" type="password" inputmode="numeric" maxlength="30" autocomplete="current-password" required placeholder="Código inicial: 1234">
+          <p class="hint">No primeiro acesso, o código padrão é 1234. Troque-o na aba Configuração.</p>
+        </div>
+        <button id="loginBtn" class="btn btn-primary btn-block" type="submit">Entrar</button>
+        <div id="loginAlert" class="alert" role="status"></div>
+      </form>
+    </section>
+
+    <section id="dashboard">
+      <div class="stats">
+        <div class="stat"><span>Famílias confirmadas</span><strong id="statFamilies">0</strong></div>
+        <div class="stat"><span>Crianças presentes</span><strong id="statChildren">0</strong></div>
+        <div class="stat"><span>Respostas “não”</span><strong id="statDeclined">0</strong></div>
+        <div class="stat"><span>Total de respostas</span><strong id="statTotal">0</strong></div>
+      </div>
+
+      <nav class="tabs" aria-label="Seções do painel">
+        <button class="tab-btn active" data-tab="responses" type="button">Confirmações</button>
+        <button class="tab-btn" data-tab="settings" type="button">Configuração da festa</button>
+      </nav>
+
+      <section id="responsesPanel" class="tab-panel active card">
+        <div class="section-head">
+          <div>
+            <h2>Confirmações recebidas</h2>
+            <span id="lastUpdated" class="muted"></span>
+          </div>
+          <div class="section-actions">
+            <button id="refreshBtn" class="btn btn-light" type="button">↻ Atualizar</button>
+            <button id="csvBtn" class="btn btn-primary" type="button">Baixar CSV</button>
+          </div>
+        </div>
+
+        <div class="table-tools">
+          <input id="searchInput" type="search" placeholder="Buscar responsável, WhatsApp ou criança...">
+          <select id="presenceFilter" aria-label="Filtrar presença">
+            <option value="">Todas as respostas</option>
+            <option value="Sim">Somente confirmadas</option>
+            <option value="Não">Somente recusadas</option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Atualizado</th>
+                <th>Responsável</th>
+                <th>WhatsApp</th>
+                <th>Presença</th>
+                <th>Qtd.</th>
+                <th>Crianças / idades</th>
+                <th>Restrições</th>
+                <th>Observações</th>
+              </tr>
+            </thead>
+            <tbody id="responsesBody"></tbody>
+          </table>
+          <div id="emptyResponses" class="empty">Nenhuma confirmação encontrada.</div>
+        </div>
+      </section>
+
+      <section id="settingsPanel" class="tab-panel card">
+        <div class="section-head">
+          <div>
+            <h2>Configuração da festa</h2>
+            <span class="muted">As mudanças aparecem no convite após salvar.</span>
+          </div>
+        </div>
+
+        <form id="settingsForm">
+          <div class="subcard">
+            <h3>Identificação</h3>
+            <div class="field">
+              <label for="eventTitle">Título da festa</label>
+              <input id="eventTitle" name="eventTitle" maxlength="100" required value="Festa Tudo de Helena">
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label for="child1Name">Primeira aniversariante</label>
+                <input id="child1Name" name="child1Name" maxlength="50" required value="Heloá">
+              </div>
+              <div class="field">
+                <label for="child1Age">Idade</label>
+                <input id="child1Age" name="child1Age" type="number" min="0" max="99" inputmode="numeric">
+              </div>
+              <div class="field">
+                <label for="child2Name">Segundo aniversariante</label>
+                <input id="child2Name" name="child2Name" maxlength="50" required value="Heitor">
+              </div>
+              <div class="field">
+                <label for="child2Age">Idade</label>
+                <input id="child2Age" name="child2Age" type="number" min="0" max="99" inputmode="numeric">
+              </div>
+            </div>
+          </div>
+
+          <div class="subcard">
+            <h3>Data, horário e local</h3>
+            <div class="field-grid three">
+              <div class="field">
+                <label for="eventDate">Data</label>
+                <input id="eventDate" name="eventDate" type="date">
+              </div>
+              <div class="field">
+                <label for="eventTime">Início</label>
+                <input id="eventTime" name="eventTime" type="time">
+              </div>
+              <div class="field">
+                <label for="eventEndTime">Término</label>
+                <input id="eventEndTime" name="eventEndTime" type="time">
+              </div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label for="locationName">Nome do local</label>
+                <input id="locationName" name="locationName" maxlength="100" placeholder="Ex.: Salão de festas">
+              </div>
+              <div class="field">
+                <label for="address">Endereço</label>
+                <input id="address" name="address" maxlength="180" placeholder="Rua, número, bairro e cidade">
+              </div>
+            </div>
+            <div class="field">
+              <label for="deadline">Prazo para confirmação</label>
+              <input id="deadline" name="deadline" type="date">
+            </div>
+          </div>
+
+          <div class="subcard">
+            <h3>Mensagens e limite</h3>
+            <div class="field">
+              <label for="eventNote">Mensagem abaixo dos detalhes</label>
+              <textarea id="eventNote" name="eventNote" maxlength="500"></textarea>
+            </div>
+            <div class="field">
+              <label for="inviteRule">Aviso sobre quem pode ser confirmado</label>
+              <textarea id="inviteRule" name="inviteRule" maxlength="500"></textarea>
+              <p class="hint">Sugestão: deixe claro que é para informar somente as crianças convidadas e não contar adultos.</p>
+            </div>
+            <div class="field">
+              <label for="maxChildrenPerResponse">Máximo de crianças por resposta</label>
+              <input id="maxChildrenPerResponse" name="maxChildrenPerResponse" type="number" min="1" max="20" inputmode="numeric" value="10">
+            </div>
+          </div>
+
+          <div class="subcard">
+            <h3>Segurança do painel</h3>
+            <div class="field-grid">
+              <div class="field">
+                <label for="newPin">Novo código administrativo</label>
+                <input id="newPin" name="newPin" type="password" minlength="4" maxlength="30" autocomplete="new-password" placeholder="Deixe vazio para manter o atual">
+              </div>
+              <div class="field">
+                <label for="newPinConfirm">Repita o novo código</label>
+                <input id="newPinConfirm" type="password" minlength="4" maxlength="30" autocomplete="new-password">
+              </div>
+            </div>
+          </div>
+
+          <div id="settingsAlert" class="alert" role="status"></div>
+          <div class="save-bar">
+            <button id="saveBtn" class="btn btn-primary" type="submit">Salvar configurações</button>
+          </div>
+        </form>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    'use strict';
+
+    const WEB_APP_URL = document.querySelector('meta[name="gas-webapp-url"]').content.trim();
+    const CONFIGURED_URL = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec(?:\?.*)?$/.test(WEB_APP_URL);
+    const $ = (selector) => document.querySelector(selector);
+
+    const state = {
+      pin: sessionStorage.getItem('tdhAdminPin') || '',
+      data: null,
+      filteredResponses: []
+    };
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function showAlert(element, message, type) {
+      element.textContent = message;
+      element.className = `alert show ${type}`;
+    }
+
+    function clearAlert(element) {
+      element.textContent = '';
+      element.className = 'alert';
+    }
+
+    function postToGas(action, payload) {
+      if (!CONFIGURED_URL) return Promise.reject(new Error('A URL do Web App ainda não foi configurada.'));
+
+      return new Promise((resolve, reject) => {
+        const requestId = `req_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        const frameName = `gasFrame_${requestId}`;
+        const iframe = document.createElement('iframe');
+        iframe.name = frameName;
+        iframe.hidden = true;
+        iframe.title = 'Comunicação com o painel';
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = WEB_APP_URL;
+        form.target = frameName;
+        form.hidden = true;
+
+        const values = { action, requestId, payload: JSON.stringify(payload) };
+        Object.entries(values).forEach(([name, value]) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = name;
+          input.value = value;
+          form.appendChild(input);
+        });
+
+        function cleanup() {
+          window.removeEventListener('message', onMessage);
+          iframe.remove();
+          form.remove();
+        }
+
+        const timer = setTimeout(() => {
+          cleanup();
+          reject(new Error('A operação demorou mais que o esperado. Tente novamente.'));
+        }, 30000);
+
+        function onMessage(event) {
+          const data = event.data;
+          if (!data || data.source !== 'tudodehelena-rsvp' || data.requestId !== requestId) return;
+          clearTimeout(timer);
+          cleanup();
+          if (data.payload?.ok) resolve(data.payload);
+          else reject(new Error(data.payload?.message || 'A operação não pôde ser concluída.'));
+        }
+
+        window.addEventListener('message', onMessage);
+        document.body.append(iframe, form);
+        form.submit();
+      });
+    }
+
+    function setDashboardVisible(visible) {
+      $('#loginCard').style.display = visible ? 'none' : 'block';
+      $('#dashboard').classList.toggle('visible', visible);
+      $('#logoutBtn').hidden = !visible;
+    }
+
+    async function loadAdminData() {
+      const response = await postToGas('getAdminData', { pin: state.pin });
+      state.data = response;
+      renderStats(response.stats || {});
+      fillSettings(response.config || {});
+      applyFilters();
+      $('#lastUpdated').textContent = `Atualizado em ${new Date().toLocaleString('pt-BR')}`;
+      return response;
+    }
+
+    function renderStats(stats) {
+      $('#statFamilies').textContent = stats.confirmedFamilies || 0;
+      $('#statChildren').textContent = stats.confirmedChildren || 0;
+      $('#statDeclined').textContent = stats.declined || 0;
+      $('#statTotal').textContent = stats.total || 0;
+    }
+
+    function fillSettings(config) {
+      const form = $('#settingsForm');
+      [...form.elements].forEach(input => {
+        if (!input.name || ['newPin'].includes(input.name)) return;
+        if (Object.hasOwn(config, input.name)) input.value = config[input.name] ?? '';
+      });
+      $('#newPin').value = '';
+      $('#newPinConfirm').value = '';
+    }
+
+    function formatWhatsApp(phone) {
+      const digits = String(phone || '').replace(/\D/g, '');
+      if (digits.length === 11) return `(${digits.slice(0,2)}) ${digits.slice(2,7)}-${digits.slice(7)}`;
+      if (digits.length === 10) return `(${digits.slice(0,2)}) ${digits.slice(2,6)}-${digits.slice(6)}`;
+      return phone || '';
+    }
+
+    function applyFilters() {
+      const responses = state.data?.responses || [];
+      const term = $('#searchInput').value.trim().toLocaleLowerCase('pt-BR');
+      const presence = $('#presenceFilter').value;
+      state.filteredResponses = responses.filter(row => {
+        const haystack = [row.responsibleName, row.phone, row.children, row.notes, row.restrictions]
+          .join(' ').toLocaleLowerCase('pt-BR');
+        return (!term || haystack.includes(term)) && (!presence || row.presence === presence);
+      });
+      renderResponses(state.filteredResponses);
+    }
+
+    function renderResponses(rows) {
+      const body = $('#responsesBody');
+      body.innerHTML = rows.map(row => `
+        <tr>
+          <td>${escapeHtml(row.updatedAt || '')}</td>
+          <td><strong>${escapeHtml(row.responsibleName || '')}</strong><br><small>${escapeHtml(row.protocol || '')}</small></td>
+          <td>${escapeHtml(formatWhatsApp(row.phone))}</td>
+          <td><span class="badge ${row.presence === 'Sim' ? 'yes' : 'no'}">${escapeHtml(row.presence || '')}</span></td>
+          <td>${escapeHtml(row.childrenCount || '0')}</td>
+          <td>${escapeHtml(row.children || '')}</td>
+          <td>${escapeHtml(row.restrictions || '')}</td>
+          <td>${escapeHtml(row.notes || '')}</td>
+        </tr>`).join('');
+      $('#emptyResponses').style.display = rows.length ? 'none' : 'block';
+    }
+
+    function formToConfig() {
+      const formData = new FormData($('#settingsForm'));
+      const config = {};
+      for (const [key, value] of formData.entries()) {
+        if (key === 'newPin') continue;
+        config[key] = String(value).trim();
+      }
+      config.maxChildrenPerResponse = Number(config.maxChildrenPerResponse || 10);
+      return config;
+    }
+
+    function csvCell(value) {
+      const text = String(value ?? '').replace(/\r?\n/g, ' ');
+      return `"${text.replaceAll('"', '""')}"`;
+    }
+
+    function downloadCsv() {
+      const rows = state.filteredResponses.length || $('#searchInput').value || $('#presenceFilter').value
+        ? state.filteredResponses
+        : (state.data?.responses || []);
+      const header = ['Atualizado', 'Responsável', 'WhatsApp', 'Presença', 'Quantidade de crianças', 'Crianças e idades', 'Restrições', 'Observações', 'Protocolo'];
+      const lines = [header, ...rows.map(row => [
+        row.updatedAt, row.responsibleName, row.phone, row.presence, row.childrenCount,
+        row.children, row.restrictions, row.notes, row.protocol
+      ])].map(line => line.map(csvCell).join(';'));
+      const blob = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `confirmacoes-festa-${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => { URL.revokeObjectURL(link.href); link.remove(); }, 500);
+    }
+
+    $('#loginForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const alert = $('#loginAlert');
+      clearAlert(alert);
+      state.pin = $('#pin').value.trim();
+      if (!state.pin) return showAlert(alert, 'Digite o código administrativo.', 'error');
+
+      const button = $('#loginBtn');
+      button.disabled = true;
+      button.textContent = 'Entrando...';
+      try {
+        await loadAdminData();
+        sessionStorage.setItem('tdhAdminPin', state.pin);
+        setDashboardVisible(true);
+      } catch (error) {
+        showAlert(alert, error.message, 'error');
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Entrar';
+      }
+    });
+
+    $('#settingsForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const alert = $('#settingsAlert');
+      clearAlert(alert);
+      const newPin = $('#newPin').value.trim();
+      const confirm = $('#newPinConfirm').value.trim();
+      if (newPin && newPin.length < 4) return showAlert(alert, 'O novo código precisa ter pelo menos 4 caracteres.', 'error');
+      if (newPin !== confirm) return showAlert(alert, 'Os dois campos do novo código não são iguais.', 'error');
+
+      const button = $('#saveBtn');
+      button.disabled = true;
+      button.textContent = 'Salvando...';
+      try {
+        const response = await postToGas('saveConfig', {
+          pin: state.pin,
+          config: formToConfig(),
+          newPin
+        });
+        if (newPin) {
+          state.pin = newPin;
+          sessionStorage.setItem('tdhAdminPin', state.pin);
+        }
+        state.data.config = response.config;
+        fillSettings(response.config);
+        showAlert(alert, 'Configurações salvas. O convite público já foi atualizado.', 'success');
+      } catch (error) {
+        showAlert(alert, error.message, 'error');
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Salvar configurações';
+      }
+    });
+
+    document.querySelectorAll('.tab-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(item => item.classList.toggle('active', item === button));
+        document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+        $(`#${button.dataset.tab}Panel`).classList.add('active');
+      });
+    });
+
+    $('#refreshBtn').addEventListener('click', async () => {
+      const button = $('#refreshBtn');
+      button.disabled = true;
+      try { await loadAdminData(); }
+      catch (error) { alert(error.message); }
+      finally { button.disabled = false; }
+    });
+
+    $('#searchInput').addEventListener('input', applyFilters);
+    $('#presenceFilter').addEventListener('change', applyFilters);
+    $('#csvBtn').addEventListener('click', downloadCsv);
+
+    $('#logoutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('tdhAdminPin');
+      state.pin = '';
+      state.data = null;
+      $('#pin').value = '';
+      setDashboardVisible(false);
+    });
+
+    $('#openPublicBtn').addEventListener('click', () => {
+      const href = new URL('index.html', window.location.href).href;
+      window.open(href, '_blank', 'noopener');
+    });
+
+    if (!CONFIGURED_URL) $('#urlWarning').classList.add('show');
+
+    if (state.pin && CONFIGURED_URL) {
+      $('#pin').value = state.pin;
+      loadAdminData().then(() => setDashboardVisible(true)).catch(() => {
+        sessionStorage.removeItem('tdhAdminPin');
+        state.pin = '';
+      });
+    }
+  </script>
+</body>
+</html>

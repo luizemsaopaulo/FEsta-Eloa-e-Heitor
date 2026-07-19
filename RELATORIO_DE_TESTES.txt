@@ -1,0 +1,31 @@
+RELATÓRIO DE TESTES — Festa Tudo de Helena
+
+Revisão: tela cheia + jingle infantil original
+
+- [OK] Tela inicial ocupa o viewport: {'x': 0, 'y': 0, 'width': 390, 'height': 844}
+- [OK] Botão liga a música: aria-pressed=true
+- [OK] Botão desliga a música: aria-pressed=false
+- [OK] Confirmar presença troca de tela: opening_hidden='',confirm_hidden=None
+- [OK] Opção Sim abre campos
+- [OK] Opção Não abre campos
+- [OK] Voltar ao convite funciona
+- [OK] index.html: estrutura HTML válida
+- [OK] index.html: JavaScript sem erro de sintaxe
+- [OK] organizador.html: estrutura HTML válida
+- [OK] organizador.html: JavaScript sem erro de sintaxe
+- [OK] Web App URL continua configurável pelo BAT
+- [OK] Fluxo Google Sheets preservado
+- [OK] Imagem de abertura presente no pacote
+- [OK] Música não depende de MP3 externo
+
+O que foi validado por cliques automáticos em navegador:
+- A imagem de abertura ocupa exatamente o tamanho da tela no celular testado (390 × 844).
+- O botão de música liga e desliga o áudio.
+- O botão Confirmar presença troca de tela sem rolar a página.
+- As opções Sim e Não abrem os campos corretos.
+- O botão Voltar ao convite retorna à abertura.
+
+Observações:
+- A música é um jingle instrumental original criado no próprio código com Web Audio API; não usa gravação ou MP3 de terceiros.
+- Navegadores bloqueiam som antes de uma ação do visitante. Por isso o áudio começa quando a pessoa toca em Tocar música ou Confirmar presença.
+- O teste real de gravação no Google Sheets depende da URL /exec que será colocada pelo CONFIGURAR_WEBAPP.bat.
